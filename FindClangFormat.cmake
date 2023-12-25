@@ -22,8 +22,7 @@ This will define the following variables:
 if(CLANG_FORMAT_ROOT_DIR)
     find_program(
         CLANG_FORMAT_BIN
-        NAMES clang-format-9 clang-format-8 clang-format-7 clang-format-6.0
-              clang-format
+        NAMES clang-format-16 clang-format-15 clang-format
         PATHS "${CLANG_FORMAT_ROOT_DIR}"
         NO_DEFAULT_PATH
     )
@@ -31,8 +30,7 @@ endif()
 
 if(NOT CLANG_FORMAT_BIN)
     find_program(
-        CLANG_FORMAT_BIN NAMES clang-format-9 clang-format-8 clang-format-7
-                               clang-format-6.0 clang-format
+        CLANG_FORMAT_BIN NAMES clang-format-16 clang-format-15 clang-format
     )
 endif()
 

@@ -23,7 +23,10 @@ Expected that format file placed at the root of project.
 Config Variables
 ^^^^^^^^^^^^^^^^
 
-``CLANG_FORMAT_CXX_FILE_EXTENSIONS``
+``CLANG_FORMAT_INCLUDE_DIRS``
+  Specify dirs explicitly where to search files. By default: <empty>
+
+``CLANG_FORMAT_FILE_EXTENSIONS``
   Specify file extension to search for. By default: *.cpp *.h *.cxx *.hxx *.hpp *.cc *.ipp
 
 ``CLANG_FORMAT_EXCLUDE_PATTERNS``
@@ -38,25 +41,35 @@ endif()
 find_package(ClangFormat)
 
 if(ClangFormat_FOUND)
-    # Find all source files
-    set(CLANG_FORMAT_CXX_FILE_EXTENSIONS
-        ${CLANG_FORMAT_CXX_FILE_EXTENSIONS}
+    set(CLANG_FORMAT_FILE_EXTENSIONS
+        ${CLANG_FORMAT_FILE_EXTENSIONS}
         *.cpp
-        *.h
-        *.cxx
-        *.hxx
         *.hpp
+        *.cxx
+        *.h
+        *.hxx
         *.cc
         *.ipp
     )
-    file(GLOB_RECURSE ALL_SOURCE_FILES ${CLANG_FORMAT_CXX_FILE_EXTENSIONS})
 
-    # Don't include some common build folders
+    if(DEFINED CLANG_FORMAT_INCLUDE_DIRS)
+        set(CLANG_FORMAT_GLOB_EXPRESSIONS "")
+        foreach(CLANG_FORMAT_INCLUDE_DIR ${CLANG_FORMAT_INCLUDE_DIRS})
+            foreach(CLANG_FORMAT_CXX_FILE_EXTENSION ${CLANG_FORMAT_FILE_EXTENSIONS})
+                list(APPEND CLANG_FORMAT_GLOB_EXPRESSIONS "${CLANG_FORMAT_INCLUDE_DIR}/${CLANG_FORMAT_CXX_FILE_EXTENSION}")
+            endforeach()
+        endforeach()
+    else()
+        set(CLANG_FORMAT_GLOB_EXPRESSIONS ${CLANG_FORMAT_FILE_EXTENSIONS})
+    endif()
+
+    # Create the list with all source files
+    file(GLOB_RECURSE ALL_SOURCE_FILES ${CLANG_FORMAT_GLOB_EXPRESSIONS})
+
     set(CLANG_FORMAT_EXCLUDE_PATTERNS ${CLANG_FORMAT_EXCLUDE_PATTERNS}
                                       "/CMakeFiles/" "cmake"
     )
 
-    # Get all project files file
     foreach(SOURCE_FILE ${ALL_SOURCE_FILES})
         foreach(EXCLUDE_PATTERN ${CLANG_FORMAT_EXCLUDE_PATTERNS})
             string(FIND ${SOURCE_FILE} ${EXCLUDE_PATTERN} EXCLUDE_FOUND)
